@@ -42,7 +42,6 @@ namespace WarehouseApp.Controllers
             return Ok(book);
         }
 
-
         [HttpGet("inventory/{bookId}")]
         public async Task<IActionResult> GetBookInventory(int bookId)
         {
