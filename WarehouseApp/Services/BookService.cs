@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Book1.Interfaces;
+using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -11,13 +12,13 @@ namespace WarehouseApp.Services
         public int CountAvailable { get; set; }
     }
 
-    public class BookService
+    public class BookService : IDatabaseService
     {
-        private readonly string _connectionString = "server=localhost;port=3300;user=root;password=8josd12M;database=books;";
-
-        public BookService()
-        { 
-
+        //private readonly string _connectionString = "server=localhost;port=3300;user=root;password=8josd12M;database=books;";
+        private readonly string _connectionString;
+        public BookService(string connectionString)
+        {
+            _connectionString = connectionString;
         }
         public async Task<List<Book>> GetBooksAsync()
         {

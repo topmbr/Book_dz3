@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Book1.Interfaces;
+using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Data;
@@ -14,13 +15,14 @@ namespace WarehouseApp.Services
         public string Genre { get; set; }
     }
 
-    public class BookServices
+    public class BookServices : IDatabaseService
     {
-        private readonly string _connectionString = "server=localhost;port=3300;user=root;password=8josd12M;database=book;";
+        //private readonly string _connectionString = "server=localhost;port=3300;user=root;password=8josd12M;database=book;";
+        private readonly string _connectionString;
 
-        public BookServices()
+        public BookServices(string connectionString)
         {
-
+            _connectionString = connectionString;
         }
 
         public async Task<List<Book>> GetBooksAsync()

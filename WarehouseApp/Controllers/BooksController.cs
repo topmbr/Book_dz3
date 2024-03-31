@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Book1.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WarehouseApp.Services;
 
@@ -8,12 +9,35 @@ namespace WarehouseApp.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly BookService _bookService = new BookService();
-        public BooksController()
+        //private readonly BookService _bookService = new BookService();
+        private readonly IDatabaseService _bookService;
+        private readonly HttpClient _httpClient;
+
+        public BooksController(IDatabaseService bookService, HttpClient httpClient)
         {
-            _bookService = new BookService();
+            _bookService = bookService;
+            _httpClient = httpClient;
         }
-        // GET api/BookInventory
+
+        [HttpGet("inventory/{bookId}")]
+        public async Task<IActionResult> GetBookInventory(int bookId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"http://localhost:7229/api/Books/inventory/{bookId}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    return NotFound();
+                }
+
+                var count = await response.Content.ReadFromJsonAsync<Book>(); 
+                return Ok(count);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }        // GET api/BookInventory
         [HttpGet]
         public async Task<IActionResult> GetBookInventory()
         {
@@ -29,22 +53,22 @@ namespace WarehouseApp.Controllers
         }
 
         // GET api/BookInventory/{bookId}
-        [HttpGet("{bookId}")]
-        public async Task<IActionResult> GetBookInventory(int bookId)
-        {
-            try
-            {
-                var count = await _bookService.GetBookByIdAsync(bookId);
-                if (count == null)
-                    return NotFound();
+        //[HttpGet("{bookId}")]
+        //public async Task<IActionResult> GetBookInventory(int bookId)
+        //{
+        //    try
+        //    {
+        //        var count = await _bookService.GetBookByIdAsync(bookId);
+        //        if (count == null)
+        //            return NotFound();
                 
-                return Ok(count);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
+        //        return Ok(count);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Internal server error: {ex.Message}");
+        //    }
+        //}
 
         // POST api/BookInventory
         [HttpPost]
